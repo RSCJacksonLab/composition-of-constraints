@@ -170,3 +170,5 @@ prot_data_checkpoint*
 figure_notebooks/
 .DS_store*
 alisim_results/
+
+.vscode
