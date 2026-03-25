@@ -172,3 +172,5 @@ figure_notebooks/
 alisim_results/
 
 .vscode
+
+boundary_enrichment_results/
