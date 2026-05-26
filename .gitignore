@@ -169,3 +169,10 @@ folding_data_checkpoint*
 prot_data_checkpoint*
 figure_notebooks/
 .DS_store*
+alisim_results/
+
+.vscode/
+
+# Specific results
+boundary_enrichment_results/
+alisim_results/
