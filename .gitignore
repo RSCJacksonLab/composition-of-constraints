@@ -171,6 +171,8 @@ figure_notebooks/
 .DS_store*
 alisim_results/
 
-.vscode
+.vscode/
 
+# Specific results
 boundary_enrichment_results/
+alisim_results/
