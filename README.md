@@ -16,14 +16,17 @@ data/processed/
 
 ## Setup
 
-Use Python 3.11.
+Use Python 3.12.
 
 ```bash
-python3.11 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
+
+The wrapper scripts automatically use `.venv/bin/python` when that environment
+exists. If you use a different environment, pass it explicitly with `PYTHON`.
 
 ## Reproduction
 

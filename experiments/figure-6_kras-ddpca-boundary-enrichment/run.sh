@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+source "${PROJECT_ROOT}/scripts/paper_env.sh"
 OUTPUT_DIR="${PAPER_OUTPUT_DIR:-${SCRIPT_DIR}/outputs}"
 WORK_DIR="${PAPER_WORKDIR:-${SCRIPT_DIR}/work}"
 SOURCE_ROOT="${SCRIPT_DIR}/source"
@@ -22,5 +23,6 @@ export PAPER_PROCESSED_DIR="${PROJECT_ROOT}/data/processed"
 export PAPER_DATA_FILES="${PROJECT_ROOT}/data/source_datasets"
 export PYTHONPATH="${NOTEBOOK_DIR}:${PROJECT_ROOT}/scripts:${PYTHONPATH:-}"
 
-PYTHON_BIN="${PYTHON:-python3}"
+PYTHON_BIN="$(paper_resolve_python "${PROJECT_ROOT}")"
+paper_require_fitness_landscape "${PYTHON_BIN}" "${PROJECT_ROOT}"
 "${PYTHON_BIN}" "${SCRIPT_DIR}/experiment.py"

@@ -2,7 +2,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PYTHON_BIN="${PYTHON:-python3}"
+source "${ROOT}/scripts/paper_env.sh"
+
+PYTHON_BIN="$(paper_resolve_python "${ROOT}")"
+export PYTHON="${PYTHON_BIN}"
+paper_require_fitness_landscape "${PYTHON_BIN}" "${ROOT}"
 
 analyses=(
   "analyses/figure-1_diffusion-scale-validation/notebooks/analysis.py"
