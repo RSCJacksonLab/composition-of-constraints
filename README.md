@@ -1,47 +1,66 @@
-# Fitness landscaep graph ruggedness
+# Fitness Landscape Ruggedness Arises from Biophysical Complexity
 
-This is the official repository for the manuscript `Fitness Landscape Ruggedness Arises from Biophysical Complexity` and constains the source code to measure fitness landscape ruggedness as the timestep parameter of the heat diffusion kernel. Ipynbs are also provided in `figure_notebooks` to reproduce all data, analysis and figures presented in the manuscript main and supplementary texts. 
+This repository accompanies the manuscript and contains the code needed to
+reproduce the paper figures from the associated data bundle.
 
-## Python environment
-All scripts were run using Python 3.11.7 using the packages listed in `requirements.txt`. Fist, create a virtual python environment
+Large source datasets and generated result files are not tracked in Git. After
+downloading the publication data bundle, unpack it at the repository root so it
+creates:
 
+```text
+data/source_datasets/
+data/alisim_results/
+data/precomputed/
+data/processed/
+```
 
-`python3 -m venv .env`
-`source .env/bin/activate`
+## Setup
 
-And install the packages with
+Use Python 3.11.
 
-`pip install -r requirements.txt`
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
+## Reproduction
 
-To reproduce analyses and figures from main and supplementary texts first retrieve the appropriate data and then run the provided figure notebooks. Open source data from other studies has been consolidated from the original publications and is hosted at the affiliated zenodo. 
+Run the experiment scripts:
 
-Download this repository, and move it to `./data_files`.
+```bash
+bash scripts/run_all_experiments.sh
+```
 
-Move the ipynb files from `./figure_notebooks` to `./src`, or update the ipynb import paths. 
+Then run the figure/SI analyses:
 
-## File overview
+```bash
+bash scripts/run_all_analyses.sh
+```
 
-### GMRF - `./src/gaussian_markov_random_field.py` 
-Source code to model fitness landscapes as a GMRF, with covariance defined by the heat diffusion kernel. 
+The Figure 2 node-label permutation nulls are optional to regenerate because
+they are expensive and can be supplied in `data/processed/`. To regenerate the
+full public null chunk:
 
-### GFT - `./src/graph_fourier_transform.py`
-Source code for the graph fourier transform used throughout the codebase and manuscript. 
+```bash
+PAPER_RUN_MODE=node_label_permutation_null \
+PAPER_NULL_PERM_START=0 \
+PAPER_NULL_PERM_STOP=100 \
+bash experiments/figure-2_stability-dms-ruggedness-and-edge-cutsets/run.sh
+```
 
-### Graph constructrion and analysis - `./src/graph_ruggedness_de.py`
-Source code to construct fitness landscape graphs and meausre quantities such as the (local) Dirichlet energy. 
+## Layout
 
-### Utils - `./src/graph_utils.py`
-Utility functions to visualise graphs with a signal cast over them. 
+- `experiments/`: figure-scoped scripts that regenerate processed outputs.
+- `analyses/`: notebooks and paired Python exports that regenerate figures and
+  tables.
+- `scripts/`: shared runtime helpers and wrapper commands.
+- `data/`: local location for the external data bundle and regenerated outputs.
 
-### NK Landscape simulations - `./src/nk_landscape.py`
-Source code to produce NK landscapes at set values of `N`, `K` and alphabet sizes. 
+The folder names indicate which figure each experiment or analysis supports.
+Run a lightweight structural check with:
 
-### Sequence evolution simulations - `./src/sequence_evolution.py`
-Source code to simulate sequence evolution over phylogenetic trees for sparse fitness landscape datasets. 
-
-### Solution space simulations - `./src/solution_space_simulation.py`
-Source code for spectral clustering to simulate fitness landscapes of different solution sizes.
-
-### t parameter fitting - `./src/timestep_opt.py`
-Source code to estimate the posterior distribution of t, fit the MAP t value to a fitness landscape and to perform Bayesian analyses (such as compute the Bayes factor).
+```bash
+bash scripts/check_reproduction_tree.sh
+```

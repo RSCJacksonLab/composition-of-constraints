@@ -1,1 +1,30 @@
+# Publication reproduction environment.
 
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+biopython
+cogent3==2025.7.10a10
+faiss-cpu>=1.11
+gudhi>=3.11
+matplotlib>=3.3.0
+networkx>=2.5
+numpy>=1.19.0
+pandas>=2.3
+piqtree>=0.6.1
+pydot>=1.4.2
+pydantic==2.11.7
+pyarrow>=17
+pyyaml
+ray>=2.48
+scikit-learn>=0.24.0
+scipy>=1.5.0
+seaborn
+softalign>=1.0.0
+statsmodels
+torch>=1.7.0
+torch-geometric>=2.6
+tqdm
+transformers>=4.53.2
+umap-learn>=0.5
+
+git+https://github.com/RSCJacksonLab/landscapy.git@dev#egg=landscapy
