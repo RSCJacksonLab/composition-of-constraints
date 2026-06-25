@@ -9,18 +9,16 @@ import types
 analysis_dir = Path.cwd().resolve().parent
 scripts_dir = analysis_dir.parents[1] / "scripts"
 sys.path.insert(0, str(scripts_dir))
-from paper_runtime import find_project_root, _patch_matplotlib_savefig
+from paper_runtime import find_project_root, prepare_source_data_compat_dir, resolve_publication_data_dirs, _patch_matplotlib_savefig
 project_root = find_project_root(analysis_dir)
+data_dirs = resolve_publication_data_dirs(project_root)
 compat_data = analysis_dir / "data_files"
 compat_alisim = analysis_dir / "alisim_results"
-for compat_path, target_path in [
-    (compat_data, project_root / "data" / "source_datasets"),
-    (compat_alisim, project_root / "data" / "alisim_results"),
-]:
-    if compat_path.is_symlink() and not compat_path.exists():
-        compat_path.unlink()
-    if not compat_path.exists():
-        compat_path.symlink_to(target_path, target_is_directory=True)
+prepare_source_data_compat_dir(data_dirs["data_files"], compat_data)
+if compat_alisim.is_symlink() and not compat_alisim.exists():
+    compat_alisim.unlink()
+if not compat_alisim.exists():
+    compat_alisim.symlink_to(data_dirs["alisim_results"], target_is_directory=True)
 sys.path.insert(0, str(Path.cwd().resolve()))
 sys.modules.setdefault("py3Dmol", types.ModuleType("py3Dmol"))
 os.environ.setdefault("MPLBACKEND", "Agg")

@@ -27,6 +27,70 @@ PAPER_PROJECT_ROOT = ENV["project_root"]
 PAPER_OUTPUT_DIR = ENV["output_dir"]
 PAPER_PROCESSED_DIR = ENV["processed_dir"]
 PAPER_DATA_FILES = ENV["data_files"]
+PAPER_ALISIM_RESULTS = ENV.get("alisim_results")
+
+ALISIM_FASTA_SUFFIXES = {".fa", ".fasta", ".fas", ".faa"}
+
+
+def _is_aligned_alisim_fasta(path):
+    name = path.name.lower()
+    return (
+        path.is_file()
+        and path.suffix.lower() in ALISIM_FASTA_SUFFIXES
+        and "unaligned" not in name
+    )
+
+
+def _discover_aligned_alisim_fastas(path):
+    path = Path(path)
+    if not path.is_dir():
+        return []
+    return sorted(p for p in path.rglob("*") if _is_aligned_alisim_fasta(p))
+
+
+def _replicate_id_from_path(path):
+    stem = Path(path).stem
+    match = re.search(r"(?:replicate|rep|sim)[_-]?0*([0-9]+)", stem, flags=re.IGNORECASE)
+    if match:
+        return match.group(1)
+    match = re.search(r"([0-9]+)", stem)
+    if match:
+        return match.group(1).lstrip("0") or "0"
+    return stem
+
+
+def _resolve_alisim_results_dir():
+    candidates = [
+        os.environ.get("PAPER_ALISIM_RESULTS"),
+        PAPER_ALISIM_RESULTS,
+        PROJECT_ROOT / "data" / "alisim_results",
+        PROJECT_ROOT / "data" / "raw" / "alisim_results",
+        PROJECT_ROOT / "alisim_results",
+        SOURCE_ROOT / "alisim_results",
+    ]
+    checked = []
+    seen = set()
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        path = Path(candidate).expanduser().resolve()
+        if path in seen:
+            continue
+        seen.add(path)
+        checked.append(path)
+        if _discover_aligned_alisim_fastas(path):
+            return path
+
+    checked_text = "\n".join(f"  - {path}" for path in checked)
+    raise RuntimeError(
+        "No aligned AliSim FASTA files found. Expected files named "
+        "*.fa, *.fasta, *.fas, or *.faa, excluding names containing "
+        "'unaligned', in one of:\n"
+        f"{checked_text}\n\n"
+        "Place the publication data bundle at data/alisim_results, keep the "
+        "project-record layout at data/raw/alisim_results, or set "
+        "PAPER_ALISIM_RESULTS=/path/to/alisim_results."
+    )
 
 def display(*args, **kwargs):
     return None
@@ -58,11 +122,12 @@ import matplotlib as mpl
 
 # %% [Figure_1.ipynb cell 24]
 
-indir = Path("../alisim_results")
-pattern = "replicate_*.fa"
-eig_max = 32
-out_pkl = Path("../alisim_results/tmap_by_rep_and_eig.pkl")
-out_json = Path("../alisim_results/tmap_by_rep_and_eig.json")
+indir = _resolve_alisim_results_dir()
+pattern = "*.fa/*.fasta/*.fas/*.faa, excluding names containing 'unaligned'"
+eig_max = int(os.environ.get("PAPER_ALISIM_EIG_MAX", "32"))
+max_reps = int(os.environ.get("PAPER_ALISIM_MAX_REPS", "100"))
+out_pkl = WORK_DIR / "tmap_by_rep_and_eig.pkl"
+out_json = WORK_DIR / "tmap_by_rep_and_eig.json"
 
 def _jsonable(obj):
     import numpy as _np
@@ -73,21 +138,23 @@ def _jsonable(obj):
     if isinstance(obj, (list, tuple)): return [_jsonable(x) for x in obj]
     return obj
 
-files = sorted(indir.glob(pattern))
-files = [p for p in files if ".unaligned." not in p.name]
+files = _discover_aligned_alisim_fastas(indir)
 if not files:
-    raise RuntimeError(f"No aligned files found in {indir} matching {pattern}")
+    observed = sorted(p.name for p in indir.iterdir())[:20] if indir.is_dir() else []
+    raise RuntimeError(
+        f"No aligned files found in resolved AliSim directory {indir} matching {pattern}. "
+        f"First observed entries: {observed}"
+    )
 
-rep_re = re.compile(r"replicate_(\d+)\.fa$")
+print(f"[paper-exp] Using {len(files)} aligned AliSim FASTA files from {indir}", flush=True)
 
 count = 0
 results = {}
 
 for i, fasta_path in tqdm(enumerate(files)):
-    if count == 100:
+    if count == max_reps:
         break
-    m = rep_re.search(fasta_path.name)
-    rep_id = m.group(1) if m else fasta_path.stem.replace("replicate_", "")
+    rep_id = _replicate_id_from_path(fasta_path)
 
     sequences = fasta_to_prot20_sequences(fasta_path)
     knn_k = max(int(np.sqrt(len(sequences))), 2)

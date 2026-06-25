@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from collections import deque
 from pathlib import Path
 
@@ -38,7 +39,12 @@ from scipy.sparse.linalg import eigsh
 from scipy.stats import gaussian_kde
 
 analysis_dir = Path(__file__).resolve().parents[1]
-project_root = analysis_dir.parents[1]
+scripts_dir = analysis_dir.parents[1] / "scripts"
+sys.path.insert(0, str(scripts_dir))
+from paper_runtime import find_project_root, resolve_publication_data_dirs
+
+project_root = find_project_root(analysis_dir)
+data_dirs = resolve_publication_data_dirs(project_root)
 table_dir = analysis_dir / "tables"
 figure_dir = analysis_dir / "figures" / "figure_2"
 si_figure_dir = analysis_dir / "figures" / "SI_figures" / "SI_figure_DMS"
@@ -740,7 +746,7 @@ EXAMPLE_EDGE_LIMIT = 15_000
 EXAMPLE_QUANTILE = 0.95
 EXAMPLE_PERM_IDX = 0
 EXAMPLE_BASE_SEED = 2026052701
-example_data_dir = project_root / "data" / "source_datasets" / "megascale_folding"
+example_data_dir = data_dirs["data_files"] / "megascale_folding"
 edge_detail_path = project_root / "data" / "processed" / "stability_dms" / "spectral_partition_boundary_tmap_edge_details.csv"
 
 

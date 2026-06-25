@@ -1,11 +1,10 @@
-# Fitness Landscape Ruggedness Arises from Biophysical Complexity
-
+# The composition of biophysical constraints generates complex, rugged regions of protein fitness landscapes
 This repository accompanies the manuscript and contains the code needed to
 reproduce the paper figures from the associated data bundle.
 
 Large source datasets and generated result files are not tracked in Git. After
-downloading the publication data bundle, unpack it at the repository root so it
-creates:
+downloading the publication data bundle (), unpack it at the repository root to
+create:
 
 ```text
 data/source_datasets/

@@ -376,7 +376,7 @@ plt.figure(figsize=(1.65, 2.75))
 
 bp = plt.boxplot(
     data,
-    labels=labels,
+    tick_labels=labels,
     showfliers=False,
     widths=0.6,
     patch_artist=True,
@@ -880,7 +880,7 @@ def plot_switching_vs_internal_boxplot(
     plt.figure(figsize=(1.65, 2.75))
     plt.boxplot(
         [switching, internal],
-        labels=["Switching", "Internal"],
+        tick_labels=["Switching", "Internal"],
         showfliers=False,
         widths=0.6,
         patch_artist=True,

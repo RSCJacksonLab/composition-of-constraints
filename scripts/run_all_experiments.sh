@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "${ROOT}/scripts/paper_env.sh"
 
+paper_prepare_sparse_alisim_compat_dir "${ROOT}"
 PYTHON_BIN="$(paper_resolve_python "${ROOT}")"
 export PYTHON="${PYTHON_BIN}"
 paper_require_fitness_landscape "${PYTHON_BIN}" "${ROOT}"

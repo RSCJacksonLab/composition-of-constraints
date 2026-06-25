@@ -2883,7 +2883,7 @@ def _filter_to_first_model_main_chain_pdb(pdb_text_in, chain_id):
     return '\n'.join(out_lines) + '\n'
 
 # ── Coolwarm colour mapping ──
-_COOLWARM_CMAP = cm.get_cmap('coolwarm')
+_COOLWARM_CMAP = plt.get_cmap('coolwarm')
 
 def _loading_to_rgb_hex(value, vmax):
     """Map a loading value to a coolwarm hex colour string for ChimeraX."""

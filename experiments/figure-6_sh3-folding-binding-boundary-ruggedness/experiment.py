@@ -1074,7 +1074,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import fitness_landscape as fl
-from IPython.display import display
 
 # -----------------------------
 # Latent resampling + regime t_map summary
